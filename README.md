@@ -3,40 +3,12 @@
 This is a utility kit for functionality related to OpenGL.  Right now,
 it provides the following:
 
-* `kit.glm`: Math for matrices by @3b, e.g. `PROJECTION`, `LOOK-AT`,
-  etc, that are no longer provided by newer OpenGL.  This is based on
-  and also re-exports [sb-cga](https://github.com/nikodemus/sb-cga)
-  functions for convenience.
+* `kit.glm`: This re-exports [sb-cga](https://github.com/nikodemus/sb-cga)
+  and [mathkit](https://github.com/lispgames/mathkit) for convenience.
 
 * `kit.gl.shader`: This provides the shader dictionary and compilation
   functionality originally found in
   [sdl2kit](https://github.com/lispgames/sdl2kit).
-
-## Math
-
-In addition to exporting [sb-cga](https://github.com/nikodemus/sb-cga)
-functions, `kit.glm` has the following:
-
-* `ortho-matrix LEFT RIGHT BOTTOM TOP NEAR FAR`: Construct an
-  orthographic matrix like `glOrtho` from OpenGL 2.1.
-* `frustum LEFT RIGHT BOTTOM TOP NEAR FAR`: Construct a perspective
-  matrix from the given parameters, like `glFrustum` from OpenGL 2.1.
-* `perspective-matrix FOVY-DEGREES ASPECT Z-NEAR Z-FAR`:  Construct a
-  perspective matrix from the given parameters, like `gluPerspective`
-  from OpenGL 2.1.
-* `look-at EYE TARGET UP`: Where `EYE`, `TARGET`, and `UP` are
-  vectors, construct a viewing matrix much like `gluLookAt` from
-  OpenGL 2.1.
-
-**Note:** These merely *create* native Lisp matrices; they do **not**
-*multiply* them like the similar GL functions or in any way set them
-as GL state like the old fixed-function pipeline.
-
-Additionally:
-
-* `copy-matrix M`: Create a copy of `M`.
-* `deg-to-rad D`: Convert `D` degrees to radians.
-
 
 ## Shaders
 

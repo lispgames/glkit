@@ -17,15 +17,9 @@
 
 (ensure-package "KIT.GLM" :use '(#:cl #:sb-cga))
 
-(ensure-export
- '(#:deg-to-rad
-   #:copy-matrix
-   #:perspective-matrix
-   #:ortho-matrix
-   #:look-at
-   #:frustum)
- :kit.glm)
-
-;;; Re-export SB-CGA symbols so they can be accessed from one place
+;;; Re-export SB-CGA and mathkit symbols so they can be accessed from
+;;; one place
 (ensure-export (package-external-symbols :sb-cga)
+               :kit.glm)
+(ensure-export (package-external-symbols :kit.math)
                :kit.glm)
