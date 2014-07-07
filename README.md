@@ -16,7 +16,7 @@ it provides the following:
 for GL shaders.  This closely mimics how GL works:
 
 ```lisp
-(defdict (shaders-3.3 :shader-path #P"...")
+(defdict shaders-3.3 (:shader-path #P"...")
    (shader basic-vertex :vertex-shader (:file "vertex.glsl"))
    (program :solid (:color)
      (:vertex-shader basic-vertex)

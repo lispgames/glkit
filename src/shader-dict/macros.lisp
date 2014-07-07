@@ -53,7 +53,7 @@ the source is a list.  In this case, `KEY` is the car of that list,
 
  ;; DEFDICT
 
-(defmacro defdict ((name &key shader-path) &body options)
+(defmacro defdict (name (&key shader-path) &body options)
   `(define-dictionary ',name
        (let ((shaders)
              (programs)
