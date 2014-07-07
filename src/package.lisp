@@ -11,7 +11,11 @@
    #:find-program #:find-uniform
    #:compile-shader-dictionary
    #:use-program
-   #:uniformi #:uniformf #:uniformfv #:uniform-matrix))
+   #:uniformi #:uniformf #:uniformfv #:uniform-matrix
+
+   #:defdict #:dict #:find-dictionary #:define-dictionary
+
+   #:parse-shader-source #:parse-shader-source-complex))
 
  ;; KIT.GLM
 

@@ -21,4 +21,6 @@
     :serial t
     :pathname "shader-dict"
     :components
-    ((:file "shaders")))))
+    ((:file "shaders")
+     (:file "uniforms")
+     (:file "macros")))))
