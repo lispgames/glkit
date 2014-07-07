@@ -61,7 +61,7 @@ the source is a list.  In this case, `KEY` is the car of that list,
                (or ,shader-path
                    *default-pathname-defaults*)))
          (macrolet ((shader (name type value)
-                      `(push (list ',name ',type ,value) shaders))
+                      `(push (list ',name ',type ',value) shaders))
                     (program (name uniform-list &rest shaders)
                       `(push (make-instance 'program-source
                                :name ,name

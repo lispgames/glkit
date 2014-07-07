@@ -14,6 +14,7 @@
    #:uniformi #:uniformf #:uniformfv #:uniform-matrix
 
    #:defdict #:dict #:find-dictionary #:define-dictionary
+   #:program #:shader
 
    #:parse-shader-source #:parse-shader-source-complex)
  :kit.gl.shader)
