@@ -15,7 +15,8 @@
 
    #:defdict #:dict #:find-dictionary #:define-dictionary
 
-   #:parse-shader-source #:parse-shader-source-complex))
+   #:parse-shader-source #:parse-shader-source-complex)
+ :kit.gl.shader)
 
  ;; KIT.GLM
 
