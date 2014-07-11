@@ -21,7 +21,7 @@
 
  ;; KIT.GLM
 
-(ensure-package "KIT.GLM" :use '(#:cl #:sb-cga))
+(ensure-package "KIT.GLM" :use '(#:cl #:sb-cga #:kit.math))
 
 ;;; Re-export SB-CGA and mathkit symbols so they can be accessed from
 ;;; one place
