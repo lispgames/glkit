@@ -65,7 +65,7 @@ the source is a list.  In this case, `KEY` is the car of that list,
                     (program (name uniform-list &rest shaders)
                       `(push (make-instance 'program-source
                                :name ,name
-                               :uniforms (list ,@uniform-list)
+                               :uniforms (copy-list ',uniform-list)
                                :shaders (list
                                          ,@(loop for i in shaders
                                                  collect `',(car i)

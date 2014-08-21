@@ -86,7 +86,9 @@
   (with-slots (uniforms) (find-program dictionary program)
     (gethash name uniforms)))
 
-(defun compile-shader-dictionary (sources)
+(defgeneric compile-shader-dictionary (source))
+
+(defmethod compile-shader-dictionary ((sources list))
   "Input is a list of PROGRAM-SOURCE objects.  Returns a new
 SHADER-DICTIONARY object.  This must be called with a valid, active
 GL-CONTEXT.  The result is only valid while that GL-CONTEXT is valid."
@@ -98,6 +100,9 @@ GL-CONTEXT.  The result is only valid while that GL-CONTEXT is valid."
             do (setf (gethash name programs) program)
                (process-source program-source program)))
     sd))
+
+(defmethod compile-shader-dictionary ((source symbol))
+  (compile-shader-dictionary (find-dictionary source)))
 
 (defun use-program (dict program)
   "Set program named `PROGRAM` in `DICT` as the active program."
