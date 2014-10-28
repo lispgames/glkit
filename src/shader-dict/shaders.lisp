@@ -83,8 +83,10 @@
     (gethash name programs)))
 
 (defun find-uniform (dictionary program name)
-  (with-slots (uniforms) (find-program dictionary program)
-    (gethash name uniforms)))
+  (with-slots (id uniforms) (find-program dictionary program)
+    (if (stringp name)
+        (gl:get-uniform-location id name)
+        (gethash name uniforms))))
 
 (defgeneric compile-shader-dictionary (source))
 
