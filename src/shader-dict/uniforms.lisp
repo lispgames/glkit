@@ -35,6 +35,6 @@ active program (set by sdk2.kit:use-program)."
   (with-uniform-location (u name) dict
     (gl:uniformfv u a)))
 
-(defun uniform-matrix (dict name dim matrices &optional (transpose t))
+(defun uniform-matrix (dict name dim matrices &optional (transpose nil))
   (with-uniform-location (u name) dict
     (gl:uniform-matrix u dim matrices transpose)))
