@@ -114,7 +114,7 @@ To use, first one defines a VAO:
 
 ```lisp
 (defvao NAME ()
-  (LAYOUT-TYPE
+  (LAYOUT-TYPE (OPTS)
     (ATTR :type COUNT)
     ...)
   (LAYOUT-TYPE
@@ -125,7 +125,7 @@ For example:
 
 ```lisp
 (defvao vertex-color ()
-  (:separate
+  (:separate ()
     (vertex :float 3)
     (color :float 3)))
 ```
@@ -182,9 +182,9 @@ You may specify one or more groups to a VAO definition:
 
 ```lisp
 (defvao NAME
-  (:separate ...)
-  (:separate ...)
-  (:interleave ...)
+  (:separate () ...)
+  (:separate () ...)
+  (:interleave () ...)
   ...)
 ```
 
