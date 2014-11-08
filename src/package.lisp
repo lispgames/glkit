@@ -1,11 +1,14 @@
-(in-package :kit.gl)
+(in-package :defpackage-plus-1)
+
+(defpackage+ :kit.gl)
 
  ;; KIT.GL.SHADER
 
-(ensure-package "KIT.GL.SHADER" :use '(#:cl #:alexandria))
+(defpackage+ :kit.gl.shader
+  (:use #:cl #:alexandria)
+  (:export-only
 
-(ensure-export-only
- '(#:compile-and-check-shader
+   #:compile-and-check-shader
    #:compile-and-link-program
    #:program #:shader-dictionary
    #:find-program #:find-uniform
@@ -16,16 +19,21 @@
    #:defdict #:dict #:find-dictionary #:define-dictionary
    #:program #:shader
 
-   #:parse-shader-source #:parse-shader-source-complex)
- :kit.gl.shader)
+   #:parse-shader-source #:parse-shader-source-complex))
+
+ ;; KIT.GL.VAO
+
+(defpackage+ :kit.gl.vao
+  (:use #:cl)
+  (:export-only
+   #:defvao
+   #:vao #:vao-buffer-data #:vao-buffer-sub-data
+   #:vao-bind #:vao-unbind
+   #:vao-draw))
 
  ;; KIT.GLM
 
-(ensure-package "KIT.GLM" :use '(#:cl #:sb-cga #:kit.math))
+(defpackage+ :kit.glm
+  (:use #:cl)
+  (:inherit #:sb-cga #:kit.math))
 
-;;; Re-export SB-CGA and mathkit symbols so they can be accessed from
-;;; one place
-(ensure-export (package-external-symbols :sb-cga)
-               :kit.glm)
-(ensure-export (package-external-symbols :kit.math)
-               :kit.glm)

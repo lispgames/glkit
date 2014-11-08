@@ -9,13 +9,12 @@
   :license "MIT"
   :version "0.0"
 
-  :depends-on (:alexandria :sb-cga :mathkit :cl-opengl)
+  :depends-on (:alexandria :defpackage-plus :sb-cga :mathkit :cl-opengl)
   :pathname "src"
   :serial t
 
   :components
-  ((:file "package-util")
-   (:file "package")
+  ((:file "package")
 
    (:module "shader-dict"
     :serial t
@@ -23,4 +22,9 @@
     :components
     ((:file "shaders")
      (:file "uniforms")
-     (:file "macros")))))
+     (:file "macros")))
+   (:module "vao"
+    :serial t
+    :pathname "vao"
+    :components
+    ((:file "vao")))))

@@ -10,6 +10,8 @@ it provides the following:
   functionality similar to what was originally found in
   [sdl2kit](https://github.com/lispgames/sdl2kit).
 
+* `kit.gl.vao`: This provides an interface for Vertex Array Objects.
+
 ## Shaders
 
 `kit.gl.shader` provides a thin, extensible, program-oriented model
@@ -101,3 +103,98 @@ well other parameters similar to `PARSE-SHADER-SOURCE`.
 These are mostly useful for projects which desire to add extended
 shader capability, such as a shader DSL, or loading in some other
 manner.
+
+## VAOs
+
+`kit.gl.vao` provides an easy way to define VAO layouts, as well as
+instantiate, bind, and draw them.  It aims to provide complete VAO
+functionality.
+
+To use, first one defines a VAO:
+
+```lisp
+(defvao NAME ()
+  (LAYOUT-TYPE
+    (ATTR :type COUNT)
+    ...)
+  (LAYOUT-TYPE
+    ...))
+```
+
+For example:
+
+```lisp
+(defvao vertex-color ()
+  (:separate
+    (vertex :float 3)
+    (color :float 3)))
+```
+
+This defines a VAO with `VERTEX` and `COLOR` attributes, which are
+each 3 `:float` values.  This uses a separate VBO for each.  (The
+`LAYOUT-TYPE` will be covered below.)
+
+Using a VAO is just as easy:
+
+```lisp
+(let ((vao (make-instance 'vao :type 'vertex-color)))
+  (vao-buffer-data vao 0 (* 4 VERTEX-FLOAT-COUNT)
+                   POINTER-TO-VERTEX-FLOATS)
+  (vao-buffer-data vao 1 (* 4 COLOR-FLOAT-COUNT)
+                   POINTER-TO-COLOR-FLOATS)
+
+  ;; Establish more stuff here.. active shaders, uniforms, etc, then:
+  (vao-draw vao :count VERTEX-COUNT))
+```
+
+**This requires a valid, active GL context,** just like other GL
+functions.  `DEFVAO` does not, but everything else, *including the
+`make-instance`*, does.
+
+Note the numbers above require you fill in a few specific things:
+
+* `vao-buffer-data` (and the `-sub` variant) take the *total byte count*.  So for a `:float` attribute with 3 members, that's `(* 4 3 COUNT)`.
+* `vao-buffer-data` also takes the *VBO index* rather than an attribute name, because an attribute might not have a unique VBO.  See [Layouts](#Layouts) below.
+* `vao-draw` takes the *vertex* count; e.g., triangles have 3 vertices, and if you have 10 triangles, that's 30 vertices.
+
+The pointer data you must supply pre-formatted.  However, for separate
+VBOs, this is reasonably easy to accomplish with something like
+[static-vectors](https://github.com/sionescu/static-vectors).
+
+### Dictionary
+
+* `defvao NAME OPTIONS &body GROUPS`<br> Define a VAO called `NAME`. Currently, there are no options.  See below for group definition.
+* `vao-buffer-data VAO VBO BYTE-COUNT POINTER &optional (USAGE :dynamic-draw)`<br> Copy data to the VBO specified.  The VBO is specified as a number.  `BYTE-COUNT` is the total number of bytes to be copied.  `POINTER` is a (foreign) pointer to the data.  `USAGE` may be any valid usage constant for `glBufferData`.
+* `vao-buffer-sub-data VAO VBO OFFSET BYTE-COUNT POINTER`<br> The `glBufferSubData` variant.
+* `vao-bind VAO`<br> Bind the VAO.  This is not necessary for calling the provided VAO functions, since the VAO is bound automatically.  However, it may be useful to ensure the VAO is bound if you wish to make GL calls manually.
+* `vao-unbind`<br> Unbind the current-bound VAO.  Not done automatically.
+* `vao-draw VAO &key primitive (first 0) count`<br> Bind the VAO and call `glDrawArrays`.  `count` is optional only if the vertex count has been supplied to the VAO, e.g. during `make-instance`.  `primitive` defaults to triangles, but may be specified explicitly here, overriding the VAO's configuration.
+
+### Layouts
+
+There are three layout types:
+
+* `:separate`: This uses a separate VBO for each attribute supplied.
+* `:interleave`:  This uses a single VBO for each attribute specified, and *interleaves* the attributes, e.g.: `Vert0 Color0 Vert1 Color1 ...`, where each attribute (such as "Vert0") has `:count` values.
+* `:block`: This uses a single VBO for each attribute specified, arranged in *blocks*, e.g.: `Vert0 Vert1 Vert2 ... Color0 Color1 Color2 ...`.  This *requires* you specify `:vertex-count` up front to `make-instance`.  **This is currently not fully implemented.**
+
+You may specify one or more groups to a VAO definition:
+
+```lisp
+(defvao NAME
+  (:separate ...)
+  (:separate ...)
+  (:interleave ...)
+  ...)
+```
+
+You must be aware of the underlying VBO layout to the extent that you
+must specify the correct index to `vao-buffer-data`.  In the future,
+you will be able to specify a valid symbolic name, though this may not
+be as efficient.
+
+You may also specify a `:divisor` option to the *group*, which
+corresponds to the DIVISOR parameter to `glVertexAttribDivisor`,
+allowing one attribute for multiple vertices.  Note that because this
+is *per-group*, if you wish to have separate divisors per attribute,
+they must be in separate groups.
