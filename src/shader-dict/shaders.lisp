@@ -123,7 +123,6 @@ calling (gl:use-program 0)."
 
 (defmethod gl-delete-object ((d shader-dictionary))
   (with-slots (programs) d
-    (use-program d nil)
     (apply #'gl-delete (alexandria:hash-table-values programs))))
 
 (defmethod gl-delete-object ((p program))
