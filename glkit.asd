@@ -15,6 +15,7 @@
 
   :components
   ((:file "package")
+   (:file "protocol")
 
    (:module "shader-dict"
     :serial t

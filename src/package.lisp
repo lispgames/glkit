@@ -12,8 +12,7 @@
  ;; KIT.GL.SHADER
 
 (defpackage+ :kit.gl.shader
-  (:use #:cl #:alexandria)
-  (:inherit #:kit.gl)
+  (:use #:cl #:alexandria #:kit.gl)
   (:export-only
 
    #:compile-and-check-shader
@@ -32,8 +31,7 @@
  ;; KIT.GL.VAO
 
 (defpackage+ :kit.gl.vao
-  (:use #:cl)
-  (:inherit #:kit.gl)
+  (:use #:cl #:kit.gl)
   (:export-only
    #:defvao
    #:vao #:vao-buffer-data #:vao-buffer-sub-data
@@ -49,7 +47,6 @@
  ;; KIT.GL.TEX
 
 (defpackage+ :kit.gl.tex
-  (:use #:cl)
-  (:inherit #:kit.gl)
+  (:use #:cl #:kit.gl)
   (:export-only
    ))
