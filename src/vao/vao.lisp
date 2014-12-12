@@ -286,3 +286,10 @@ unknown."))
   (with-slots ((prim primitive) vertex-count) vao
     (vao-bind vao)
     (%gl:draw-arrays (or primitive prim) first (or count vertex-count))))
+
+ ;; delete
+
+(defmethod gl-delete-object ((vao vao))
+  (with-slots (vbos id) vao
+    (gl:delete-buffers vbos)
+    (gl:delete-vertex-arrays (list id))))

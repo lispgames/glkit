@@ -107,9 +107,25 @@ GL-CONTEXT.  The result is only valid while that GL-CONTEXT is valid."
   (compile-shader-dictionary (find-dictionary source)))
 
 (defun use-program (dict program)
-  "Set program named `PROGRAM` in `DICT` as the active program."
+  "Set program named `PROGRAM` in `DICT` as the active program.
+`PROGRAM` may be 0 or NIL, in which case, this has the same effect as
+calling (gl:use-program 0)."
   (with-slots (active-program) dict
-    (let ((p (find-program dict program)))
-      (with-slots (id) p
-        (setf active-program p)
-        (gl:use-program id)))))
+    (if (or (null program)
+            (and (numberp program) (= 0 program)))
+        (progn
+          (setf active-program nil)
+          (gl:use-program 0))
+        (let ((p (find-program dict program)))
+          (with-slots (id) p
+            (setf active-program p)
+            (gl:use-program id))))))
+
+(defmethod gl-delete-object ((d shader-dictionary))
+  (with-slots (programs) d
+    (use-program d nil)
+    (apply #'gl-delete (alexandria:hash-table-values programs))))
+
+(defmethod gl-delete-object ((p program))
+  (with-slots (id) p
+    (%gl:delete-program id)))

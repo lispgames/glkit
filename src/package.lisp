@@ -1,11 +1,19 @@
 (in-package :defpackage-plus-1)
 
-(defpackage+ :kit.gl)
+(defpackage+ :kit.gl
+  (:use #:cl)
+  (:export-only
+   ;; Utility
+   #:gl-delete
+
+   ;; Protocol
+   #:gl-delete-object))
 
  ;; KIT.GL.SHADER
 
 (defpackage+ :kit.gl.shader
   (:use #:cl #:alexandria)
+  (:inherit #:kit.gl)
   (:export-only
 
    #:compile-and-check-shader
@@ -25,6 +33,7 @@
 
 (defpackage+ :kit.gl.vao
   (:use #:cl)
+  (:inherit #:kit.gl)
   (:export-only
    #:defvao
    #:vao #:vao-buffer-data #:vao-buffer-sub-data
@@ -37,3 +46,10 @@
   (:use #:cl)
   (:inherit #:sb-cga #:kit.math))
 
+ ;; KIT.GL.TEX
+
+(defpackage+ :kit.gl.tex
+  (:use #:cl)
+  (:inherit #:kit.gl)
+  (:export-only
+   ))
