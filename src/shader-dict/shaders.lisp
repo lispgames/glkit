@@ -109,12 +109,14 @@ GL-CONTEXT.  The result is only valid while that GL-CONTEXT is valid."
 (defun use-program (dict program)
   "Set program named `PROGRAM` in `DICT` as the active program.
 `PROGRAM` may be 0 or NIL, in which case, this has the same effect as
-calling (gl:use-program 0)."
+calling (gl:use-program 0).  In this case, it is valid to pass `NIL`
+for `DICT`."
   (with-slots (active-program) dict
     (if (or (null program)
             (and (numberp program) (= 0 program)))
         (progn
-          (setf active-program nil)
+          (when dict
+            (setf active-program nil))
           (gl:use-program 0))
         (let ((p (find-program dict program)))
           (with-slots (id) p
