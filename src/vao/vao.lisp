@@ -268,17 +268,48 @@ unknown."))
 
  ;; buffer-data
 
+(defun vao-buffer-vector (vao vbo size vector &optional (usage :dynamic-draw))
+  #+glkit-sv
+  (with-slots (type vbos) vao
+    (with-slots (attr-index) type
+      (let* ((sv (static-vectors:make-static-vector
+                  (length vector)
+                  :element-type (array-element-type vector)
+                  :initial-contents vector))
+             (ptr (static-vectors:static-vector-pointer sv)))
+        (%gl:bind-buffer :array-buffer (aref vbos vbo))
+        (%gl:buffer-data :array-buffer size ptr usage)
+        (static-vectors:free-static-vector sv))))
+  #-glkit-sv
+  (error "STATIC-VECTORS not supported by your implementation."))
+
 (defun vao-buffer-data (vao vbo size pointer &optional (usage :dynamic-draw))
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
       (%gl:bind-buffer :array-buffer (aref vbos vbo))
       (%gl:buffer-data :array-buffer size pointer usage))))
 
+(defun vao-buffer-sub-vector (vao vbo offset size vector)
+  #+glkit-sv
+  (with-slots (type vbos) vao
+    (with-slots (attr-index) type
+      (let* ((sv (static-vectors:make-static-vector
+                  (length vector)
+                  :element-type (array-element-type vector)
+                  :initial-contents vector))
+             (ptr (static-vectors:static-vector-pointer sv)))
+        (%gl:bind-buffer :array-buffer (aref vbos vbo))
+        (%gl:buffer-sub-data :array-buffer offset size ptr)
+        (static-vectors:free-static-vector sv))))
+  #-glkit-sv
+  (error "STATIC-VECTORS not supported by your implementation."))
+
 (defun vao-buffer-sub-data (vao vbo offset size pointer)
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
-      (%gl:bind-buffer :array-buffer (aref vbos vbo))
-      (%gl:buffer-sub-data :array-buffer offset size pointer))))
+      (with-sv-maybe (ptr pointer)
+        (%gl:bind-buffer :array-buffer (aref vbos vbo))
+        (%gl:buffer-sub-data :array-buffer offset size ptr)))))
 
  ;; draw
 

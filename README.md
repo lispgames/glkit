@@ -138,10 +138,8 @@ Using a VAO is just as easy:
 
 ```lisp
 (let ((vao (make-instance 'vao :type 'vertex-color)))
-  (vao-buffer-data vao 0 (* 4 VERTEX-FLOAT-COUNT)
-                   POINTER-TO-VERTEX-FLOATS)
-  (vao-buffer-data vao 1 (* 4 COLOR-FLOAT-COUNT)
-                   POINTER-TO-COLOR-FLOATS)
+  (vao-buffer-data vao 0 (* 4 VERTEX-FLOAT-COUNT) POINTER-TO-VERTEX-FLOATS)
+  (vao-buffer-data vao 1 (* 4 COLOR-FLOAT-COUNT) POINTER-TO-COLOR-FLOATS)
 
   ;; Establish more stuff here.. active shaders, uniforms, etc, then:
   (vao-draw vao :count VERTEX-COUNT))
@@ -151,9 +149,11 @@ Using a VAO is just as easy:
 functions.  `DEFVAO` does not, but everything else, *including the
 `make-instance`*, does.
 
+Alternatively, you can use `VAO-BUFFER-VECTOR` (and `VAO-BUFFER-SUB-VECTOR`), and supply a vector of `:element-type 'single-float` or `:element-type 'double-float` instead of a pointer.  This is only available if your implementation supports *static-vectors* (most do).  This is for convenience; managing the data yourself can reduce copying and consing considerably.
+
 Note the numbers above require you fill in a few specific things:
 
-* `vao-buffer-data` (and the `-sub` variant) take the *total byte count*.  So for a `:float` attribute with 3 members, that's `(* 4 3 COUNT)`.
+* `vao-buffer-*` (and the `-sub` variants) take the *total byte count*.  So for a `:float` attribute with 3 members, that's `(* 4 3 COUNT)`.
 * `vao-buffer-data` also takes the *VBO index* rather than an attribute name, because an attribute might not have a unique VBO.  See [Layouts](#Layouts) below.
 * `vao-draw` takes the *vertex* count; e.g., triangles have 3 vertices, and if you have 10 triangles, that's 30 vertices.
 
