@@ -307,9 +307,8 @@ unknown."))
 (defun vao-buffer-sub-data (vao vbo offset size pointer)
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
-      (with-sv-maybe (ptr pointer)
-        (%gl:bind-buffer :array-buffer (aref vbos vbo))
-        (%gl:buffer-sub-data :array-buffer offset size ptr)))))
+      (%gl:bind-buffer :array-buffer (aref vbos vbo))
+      (%gl:buffer-sub-data :array-buffer offset size pointer))))
 
  ;; draw
 
