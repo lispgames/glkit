@@ -51,3 +51,9 @@
   (:use #:cl #:kit.gl)
   (:export-only
    ))
+
+ ;; KIT.GL.TEST
+
+(defpackage+ :kit.gl.test
+  (:use #:cl #:alexandria #:kit.gl #:kit.gl.vao)
+  (:export :vaos))
