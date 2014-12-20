@@ -159,7 +159,7 @@ Note the numbers above require you fill in a few specific things:
 
 The pointer data you must supply pre-formatted.  However, for separate
 VBOs, this is reasonably easy to accomplish with something like
-[static-vectors](https://github.com/sionescu/static-vectors).
+[static-vectors](https://github.com/sionescu/static-vectors), or you can use the less-efficient `-vector` variants which do this for you.
 
 ### Dictionary
 
