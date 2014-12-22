@@ -35,6 +35,7 @@
   (:export-only
    #:defvao
    #:vao #:vao-buffer-data #:vao-buffer-sub-data
+   #:vao-buffer-vector #:vao-buffer-sub-vector
    #:vao-bind #:vao-unbind
    #:vao-draw))
 
@@ -65,3 +66,9 @@
    ;; RENDERBUFFER
    #:renderbuffer #:renderbuffer-id
    ))
+
+ ;; KIT.GL.TEST
+
+(defpackage+ :kit.gl.test
+  (:use #:cl #:alexandria #:kit.gl #:kit.gl.vao)
+  (:export :vaos))

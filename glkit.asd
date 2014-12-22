@@ -3,13 +3,18 @@
 
 (in-package :glkit.asdf)
 
+#+(or sbcl ccl cmucl ecl lispworks allegro)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (pushnew :glkit-sv *features*))
+
 (defsystem :glkit
   :description "Various utilities for OpenGL"
   :author ("rpav")
   :license "MIT"
   :version "0.0"
 
-  :depends-on (:alexandria :defpackage-plus :sb-cga :mathkit :cl-opengl)
+  :depends-on (:alexandria :defpackage-plus :sb-cga :mathkit
+               :cl-opengl #+glkit-sv :static-vectors)
   :pathname "src"
   :serial t
 
