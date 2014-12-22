@@ -35,5 +35,6 @@
     :serial t
     :pathname "tex"
     :components
-    ((:file "texture")
+    ((:file "util")
+     (:file "texture")
      (:file "fbo")))))
