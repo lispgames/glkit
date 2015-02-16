@@ -67,7 +67,7 @@ void main() {
     (setf vao (make-instance 'vao
                 :type 'vertex-color-2d
                 :primitive :triangles
-                :vertex-count (length *vao-verts*)))
+                :vertex-count (/ (length *vao-verts*) 2)))
     (vao-buffer-vector vao 0 (* 4 (length *vao-verts*)) *vao-verts*)
     (vao-buffer-vector vao 1 (* 4 (length *vao-colors*)) *vao-colors*)))
 
