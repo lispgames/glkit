@@ -15,4 +15,4 @@
 
   :components
   ((:file "vaos")
-   (:file "vaos-color")))
+   (:file "vao-shader")))
