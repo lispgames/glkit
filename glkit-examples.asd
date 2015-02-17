@@ -15,4 +15,5 @@
 
   :components
   ((:file "vaos")
-   (:file "vao-shader")))
+   (:file "vao-shader")
+   (:file "vao-shader-150")))
