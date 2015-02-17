@@ -55,13 +55,14 @@ void main() {
    (vao :initform nil)
    (programs :initform nil)))
 
-(defmethod initialize-instance :after ((w vao-shader-window) &key &allow-other-keys)
+(defmethod initialize-instance :after ((w vao-shader-window)
+                                       &key (shaders 'vao-color.programs) &allow-other-keys)
   (setf (idle-render w) t)
   (gl:viewport 0 0 800 600)
 
   (with-slots (vao programs) w
-    ;; Compile shaders
-    (setf programs (compile-shader-dictionary 'vao-color.programs))
+    ;; Compile shaders using the dictionary name specified via :shaders
+    (setf programs (compile-shader-dictionary shaders))
 
     ;; Make the VAO, and copy the data into it.
     (setf vao (make-instance 'vao
