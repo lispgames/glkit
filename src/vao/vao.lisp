@@ -56,7 +56,8 @@ unknown."))
                                   stride offset))
       (:double
        (%gl:vertex-attrib-lpointer index count type stride offset)))
-    (%gl:vertex-attrib-divisor index divisor)))
+    (unless (or (= 0 divisor) (= 1 divisor))
+      (%gl:vertex-attrib-divisor index divisor))))
 
 (defclass vertex-attribute-group ()
   ((divisor :initform 0 :initarg :divisor)
