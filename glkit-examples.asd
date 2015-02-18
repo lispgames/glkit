@@ -14,6 +14,7 @@
   :serial t
 
   :components
-  ((:file "vaos")
+  ((:file "package")
+   (:file "vaos")
    (:file "vao-shader")
    (:file "vao-shader-150")))
