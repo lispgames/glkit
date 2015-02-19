@@ -102,6 +102,7 @@ GL-CONTEXT.  The result is only valid while that GL-CONTEXT is valid."
             as program = (make-instance 'program :name name)
             do (setf (gethash name programs) program)
                (process-source program-source program)))
+    (gl:use-program 0)
     sd))
 
 (defmethod compile-shader-dictionary ((source symbol))
