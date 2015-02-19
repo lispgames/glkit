@@ -1,6 +1,6 @@
 ;;; This is based on the sdl2kit example; you must load that first!
 ;;;
-;;; Run: (kit.gl.test:vao-shader)
+;;; Run: (kit.gl.test:vao-shader-330)
 ;;;
 ;;; Use this if your card supports GL 3.3 / GLSL 3.30
 
@@ -23,7 +23,7 @@
     (color :float 3)))
 
 ;;; Now the shaders to use it
-(defdict vao-color.programs ()
+(defdict vao-color.programs.330 ()
   (program :vertex-color (:view-m)
            (:vertex-shader "
 #version 330
@@ -57,7 +57,7 @@ void main() {
    (programs :initform nil)))
 
 (defmethod initialize-instance :after ((w vao-shader-window)
-                                       &key (shaders 'vao-color.programs) &allow-other-keys)
+                                       &key (shaders 'vao-color.programs.330) &allow-other-keys)
   (setf (idle-render w) t)
   (gl:viewport 0 0 800 600)
 
@@ -83,7 +83,7 @@ void main() {
     (uniform-matrix programs :view-m 4 (vector view-matrix))
     (vao-draw vao)))
 
-(defun vao-shader ()
+(defun vao-shader-330 ()
   (kit.sdl2:start)
   (make-instance 'vao-shader-window))
 
