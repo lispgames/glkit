@@ -27,7 +27,8 @@
           (progn
             (loop for shader in compiled-shaders
                   do (gl:delete-shader shader))
-            (error "Error creating program"))
+            (error "Error creating program: ~A"
+                   (gl:get-error)))
           (progn
             (loop for shader in compiled-shaders
                   do (gl:attach-shader program shader))
