@@ -2,6 +2,7 @@
 ;;;
 ;;; Run: (kit.gl.test:vao-shader)
 ;;;
+;;; Use this if your card supports GL 3.3 / GLSL 3.30
 
 (in-package :kit.gl.test)
 
