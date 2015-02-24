@@ -16,6 +16,7 @@
   :components
   ((:file "package")
    (:file "vaos")
+   (:file "vao-shader-window")
    (:file "vao-shader-330")
    (:file "vao-shader-150")
    (:file "vao-shader-120")))
