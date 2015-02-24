@@ -1,11 +1,11 @@
-;;; This is based on the sdl2kit example; you must load that first!
 ;;;
 ;;; Run: (kit.gl.test:vao-shader-120)
 ;;;
 ;;; This reuses everything from `vao-shader.lisp` except the shader
 ;;; dictionary.
 ;;;
-;;; Use this if your card only supports GL 2.1 / GLSL 1.20
+;;; Use this if your card only supports GL 2.1 / GLSL 1.20 and has the
+;;; ARB_vertex_array_object extension.
 
 (in-package :kit.gl.test)
 

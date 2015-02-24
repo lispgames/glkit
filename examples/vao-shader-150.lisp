@@ -1,4 +1,3 @@
-;;; This is based on the sdl2kit example; you must load that first!
 ;;;
 ;;; Run: (kit.gl.test:vao-shader-150)
 ;;;
