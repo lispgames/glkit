@@ -25,7 +25,7 @@ void main() {
            (:fragment-shader "
 #version 330
 
-in vec3 f_color;
+smooth in vec3 f_color;
 out vec4 f_out;
 
 void main() {
