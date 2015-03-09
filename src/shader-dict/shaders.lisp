@@ -1,11 +1,28 @@
 (in-package :kit.gl.shader)
 
-;; (defvar *shader-dict*
-;;   '((:solid
-;;      (:uniforms ((x "x") (y "y")))
-;;      (:shaders
-;;       :vertex-shader "..."
-;;       :fragment-shader "..."))))
+ ;; Classes
+
+(defclass shader-dictionary-definition ()
+  ((name :initarg :name)
+   (path :initform *default-pathname-defaults* :initarg :path)
+   (shaders :initarg :shaders)
+   (programs :initarg :programs)))
+
+(defclass program-source ()
+  ((name :initarg :name)
+   (shaders :initarg :shaders)
+   (uniforms :initarg :uniforms)))
+
+(defclass program ()
+  ((name :initform nil :initarg :name)
+   (id :initform nil)
+   (uniforms :initform (make-hash-table :test 'equal))))
+
+(defclass compiled-shader-dictionary ()
+  ((programs :initform (make-hash-table))
+   (active-program :initform nil)))
+
+ ;; Functions
 
 (defun compile-and-check-shader (shader source)
   (gl:shader-source shader source)
@@ -41,27 +58,23 @@
                      (gl:delete-shader shader))))
       program)))
 
-(defclass program-source ()
-  ((name :initarg :name)
-   (shaders :initarg :shaders)
-   (uniforms :initarg :uniforms)))
-
 (defmethod print-object ((o program-source) stream)
   (with-slots (name) o
     (print-unreadable-object (o stream :type t)
       (format stream "~S" name))))
 
-(defclass program ()
-  ((name :initform nil :initarg :name)
-   (id :initform nil)
-   (uniforms :initform (make-hash-table :test 'equal))))
-
-(defclass shader-dictionary ()
-  ((programs :initform (make-hash-table))
-   (active-program :initform nil)))
-
-(defun process-source (source program)
-  (with-slots (shaders) source
+(defun process-source (dict source program)
+  (let ((shaders
+          (let ((*default-pathname-defaults*
+                  (slot-value dict 'path)))
+            (loop with other-shaders = (slot-value dict 'shaders)
+                  for shader-source in (slot-value source 'shaders)
+                  as type = (car shader-source)
+                  collect type
+                  collect
+                  (parse-shader-source (cadr shader-source)
+                                       type
+                                       other-shaders)))))
     (let ((p (apply #'compile-and-link-program shaders)))
       (gl:use-program p)
       (with-slots (id  uniforms) program
@@ -91,17 +104,18 @@
 
 (defgeneric compile-shader-dictionary (source))
 
-(defmethod compile-shader-dictionary ((sources list))
+(defmethod compile-shader-dictionary ((sources shader-dictionary-definition))
   "Input is a list of PROGRAM-SOURCE objects.  Returns a new
-SHADER-DICTIONARY object.  This must be called with a valid, active
+COMPILED-SHADER-DICTIONARY object.  This must be called with a valid, active
 GL-CONTEXT.  The result is only valid while that GL-CONTEXT is valid."
-  (let ((sd (make-instance 'shader-dictionary)))
-    (with-slots (programs) sd
-      (loop for program-source in sources
-            as name = (slot-value program-source 'name)
-            as program = (make-instance 'program :name name)
-            do (setf (gethash name programs) program)
-               (process-source program-source program)))
+  (let ((sd (make-instance 'compiled-shader-dictionary)))
+    (with-slots (path shaders (source programs)) sources
+      (with-slots ((compiled-programs programs)) sd
+        (loop for program-source in source
+              as name = (slot-value program-source 'name)
+              as program = (make-instance 'program :name name)
+              do (setf (gethash name compiled-programs) program)
+                 (process-source sources program-source program))))
     (gl:use-program 0)
     sd))
 
@@ -125,7 +139,7 @@ for `DICT`."
             (setf active-program p)
             (gl:use-program id))))))
 
-(defmethod gl-delete-object ((d shader-dictionary))
+(defmethod gl-delete-object ((d compiled-shader-dictionary))
   (with-slots (programs) d
     (apply #'gl-delete (alexandria:hash-table-values programs))))
 

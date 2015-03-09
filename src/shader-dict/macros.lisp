@@ -8,8 +8,14 @@
   (or (gethash name *shader-dictionaries*)
       (error "Shader dictionary not found: ~S" name)))
 
-(defun define-dictionary (name programs)
-  (setf (gethash name *shader-dictionaries*) programs))
+(defun define-dictionary (name programs &key (path *default-pathname-defaults*)
+                          shaders)
+  (setf (gethash name *shader-dictionaries*)
+        (make-instance 'shader-dictionary-definition
+          :name name
+          :path path
+          :shaders shaders
+          :programs programs)))
 
 (defmacro dict (name)
   `(find-dictionary ',name))
@@ -17,7 +23,7 @@
  ;; PARSE-SHADER-SOURCE
 
 (defgeneric parse-shader-source (source shader-type shader-list)
-  (:documentation "Specialize on `SHADER-SOURCE` and return a string.
+  (:documentation "Specialize on `SOURCE` and return a string.
 `SHADER-TYPE` is the type (e.g., `:fragment-shader`).  Specializations
 are predefined for *string*, *list*, and *symbol*; do not redefine
 these.
@@ -54,22 +60,18 @@ the source is a list.  In this case, `KEY` is the car of that list,
  ;; DEFDICT
 
 (defmacro defdict (name (&key shader-path) &body options)
-  `(define-dictionary ',name
-       (let ((shaders)
-             (programs)
-             (*default-pathname-defaults*
-               (or ,shader-path
-                   *default-pathname-defaults*)))
-         (macrolet ((shader (name type value)
-                      `(push (list ',name ',type ',value) shaders))
-                    (program (name uniform-list &rest shaders)
-                      `(push (make-instance 'program-source
-                               :name ,name
-                               :uniforms (copy-list ',uniform-list)
-                               :shaders (list
-                                         ,@(loop for i in shaders
-                                                 collect `',(car i)
-                                                 collect `(parse-shader-source ',(cadr i) ',(car i) shaders))))
-                             programs)))
-           ,@options
-           programs))))
+  (let ((shaders) (programs))
+    (loop for option in options
+          do (destructuring-ecase option
+               ((shader name type value)
+                (push (list name type value) shaders))
+               ((program name uniform-list &rest shaders)
+                (push `(make-instance 'program-source
+                         :name ',name
+                         :uniforms ',uniform-list
+                         :shaders ',shaders)
+                      programs))))
+    `(define-dictionary ',name (list ,@programs)
+       :path (or ,shader-path
+                 *default-pathname-defaults*)
+       :shaders ',shaders)))
