@@ -65,12 +65,24 @@ the source is a list.  In this case, `KEY` is the car of that list,
           do (destructuring-ecase option
                ((shader name type value)
                 (push (list name type value) shaders))
-               ((program name uniform-list &rest shaders)
-                (push `(make-instance 'program-source
-                         :name ',name
-                         :uniforms ',uniform-list
-                         :shaders ',shaders)
-                      programs))))
+               ((program &rest options)
+                (if (listp (car options))
+                    (destructuring-bind ((name &key attrs uniforms)
+                                         &rest shaders)
+                        options
+                      (push `(make-instance 'program-source
+                               :name ',name
+                               :uniforms ',uniforms
+                               :attrs ',attrs
+                               :shaders ',shaders)
+                            programs))
+                    (destructuring-bind (name uniform-list &rest shaders)
+                        options
+                      (push `(make-instance 'program-source
+                               :name ',name
+                               :uniforms ',uniform-list
+                               :shaders ',shaders)
+                            programs))))))
     `(define-dictionary ',name (list ,@programs)
        :path (or ,shader-path
                  *default-pathname-defaults*)

@@ -10,7 +10,10 @@
 
 ;;; Now the shaders to use it
 (defdict vao-color.programs.150 ()
-  (program :vertex-color (:view-m)
+  (program (:vertex-color
+             :uniforms (:view-m)
+             :attrs ((:vertex 0)
+                     (:color 1)))
            (:vertex-shader "
 #version 150
 

@@ -11,6 +11,7 @@
 (defclass program-source ()
   ((name :initarg :name)
    (shaders :initarg :shaders)
+   (vertex-attributes :initarg :attrs :initform nil)
    (uniforms :initarg :uniforms)))
 
 (defclass program ()
@@ -30,7 +31,7 @@
   (unless (gl:get-shader shader :compile-status)
     (gl:get-shader-info-log shader)))
 
-(defun compile-and-link-program (&rest shaders)
+(defun compile-and-link-program (attrs &rest shaders)
   "(compile-and-link-program :vertex-shader STRING :fragment-shader STRING ...)"
   (let (compiled-shaders)
     (loop for type in shaders by #'cddr
@@ -49,6 +50,16 @@
           (progn
             (loop for shader in compiled-shaders
                   do (gl:attach-shader program shader))
+            (loop for attr in attrs
+                  as name = (if (symbolp (car attr))
+                                (string-downcase (string (car attr)))
+                                (car attr))
+                  as index = (cadr attr)
+                  do (handler-case
+                         (gl:bind-attrib-location program index name)
+                       (gl:opengl-error (e)
+                         (error "Error binding attribute ~S:~%~A"
+                                name e))))
             (gl:link-program program)
             (let ((log (gl:get-program-info-log program)))
               (unless (string= "" log)
@@ -75,7 +86,8 @@
                   (parse-shader-source (cadr shader-source)
                                        type
                                        other-shaders)))))
-    (let ((p (apply #'compile-and-link-program shaders)))
+    (let ((p (apply #'compile-and-link-program
+                    (slot-value source 'vertex-attributes) shaders)))
       (gl:use-program p)
       (with-slots (id  uniforms) program
         (setf id p)

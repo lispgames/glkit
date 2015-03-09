@@ -23,7 +23,11 @@ for GL shaders.  This closely mimics how GL works:
    (program :solid (:color)
      (:vertex-shader basic-vertex)
      (:fragment-shader "..."))
-   (program :sprite ((:texture "texture_id"))
+   (program (:sprite
+              :uniforms ((:texture "texture_id"))
+              :attrs ((:vertex 0)
+                      (:uv 1)
+                      ...))
      (:vertex-shader basic-vertex)
      (:fragment-shader (:file "..."))))
 ```
