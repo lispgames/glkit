@@ -35,6 +35,9 @@ void main() {
 
 (defun vao-shader-330 ()
   (kit.sdl2:start)
+  (sdl2:in-main-thread ()
+    (sdl2:gl-set-attr :context-major-version 3)
+    (sdl2:gl-set-attr :context-minor-version 3))
   (make-instance 'vao-shader-window :shaders 'vao-color.programs.330))
 
 ;; (kit.gl.test:vao-shader-330)
