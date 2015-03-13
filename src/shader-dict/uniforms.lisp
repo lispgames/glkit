@@ -38,3 +38,16 @@ active program (set by sdk2.kit:use-program)."
 (defun uniform-matrix (dict name dim matrices &optional (transpose nil))
   (with-uniform-location (u name) dict
     (gl:uniform-matrix u dim matrices transpose)))
+
+(defun uniform-matrix-1-sv (dict name matrix &optional (transpose nil))
+  (declare (type kit.glm:matrix matrix))
+  #+glkit-sv
+  (let* ((sv (static-vectors:make-static-vector 16
+                                                :element-type 'single-float
+                                                :initial-contents matrix))
+         (ptr (static-vectors:static-vector-pointer sv)))
+    (with-uniform-location (u name) dict
+      (%gl:uniform-matrix-4fv u 1 transpose ptr))
+    (static-vectors:free-static-vector sv))
+  #-glkit-sv
+  (error "STATIC-VECTORS not supported by your implementation."))

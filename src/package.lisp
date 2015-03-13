@@ -22,6 +22,7 @@
    #:compile-shader-dictionary
    #:use-program
    #:uniformi #:uniformf #:uniformfv #:uniform-matrix
+   #:uniform-matrix-1-sv
 
    #:defdict #:dict #:find-dictionary #:define-dictionary
    #:program #:shader
