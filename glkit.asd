@@ -3,7 +3,7 @@
 
 (in-package :glkit.asdf)
 
-#+(or sbcl ccl cmucl ecl lispworks allegro)
+#+(or (and sbcl (not windows)) ccl cmucl ecl lispworks allegro)
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :glkit-sv *features*))
 
