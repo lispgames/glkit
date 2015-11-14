@@ -37,7 +37,8 @@ void main() {
   (kit.sdl2:start)
   (sdl2:in-main-thread ()
     (sdl2:gl-set-attr :context-major-version 4)
-    (sdl2:gl-set-attr :context-minor-version 1))
+    (sdl2:gl-set-attr :context-minor-version 1)
+    (sdl2:gl-set-attr :context-profile-mask 1))
   (make-instance 'vao-shader-window :shaders 'vao-color.programs.410))
 
 ;; (kit.gl.test:vao-shader-410)

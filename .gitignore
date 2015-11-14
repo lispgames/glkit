@@ -1,4 +1,6 @@
 *.fasl
 *.lx??fsl
+*.dx??fsl
+*.wx??fsl
 #*
 *~
