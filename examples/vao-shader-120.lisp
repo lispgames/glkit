@@ -40,11 +40,17 @@ void main() {
 }
 ")))
 
+#-darwin
 (defun vao-shader-120 ()
   (kit.sdl2:start)
   (sdl2:in-main-thread ()
     (sdl2:gl-set-attr :context-major-version 2)
-    (sdl2:gl-set-attr :context-minor-version 1))
+    (sdl2:gl-set-attr :context-minor-version 1)
+    (sdl2:gl-set-attr :context-profile-mask 1))
   (make-instance 'vao-shader-window :shaders 'vao-color.programs.120))
+
+#+darwin
+(defun vao-shader-120 ()
+  (format t "This example does not work on darwin. Try running (kit.gl.test:vao-shader-410)."))
 
 ;; (kit.gl.test:vao-shader-120)
