@@ -224,6 +224,9 @@ unknown."))
 
  ;; vao
 
+(defclass ivao (vao)
+  ((index :initarg :index)))
+
 (defclass vao ()
   ((type :type vao-declaration)
    (id :initform (gl:gen-vertex-array))
@@ -316,6 +319,11 @@ unknown."))
   (with-slots ((prim primitive) vertex-count) vao
     (vao-bind vao)
     (%gl:draw-arrays (or primitive prim) first (or count vertex-count))))
+
+(defun ivao-draw (vao &key primitive index)
+  (with-slots ((prim primitive) (ind index)) vao
+    (vao-bind vao)
+    (gl:draw-elements (or primitive prim) (or index ind))))
 
  ;; delete
 
