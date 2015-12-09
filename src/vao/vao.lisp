@@ -233,6 +233,9 @@ unknown."))
    (pointers :initform nil)
    (primitive :initarg :primitive :initform nil)))
 
+(defclass vao-indexed (vao)
+  ((index :initarg :index)))
+
 (defmethod initialize-instance :after ((vao vao) &key type &allow-other-keys)
   (vao-bind vao)
   (with-slots ((vao-type type) id vbos vertex-count) vao
@@ -317,6 +320,11 @@ unknown."))
   (with-slots ((prim primitive) vertex-count) vao
     (vao-bind vao)
     (%gl:draw-arrays (or primitive prim) first (or count vertex-count))))
+
+(defun vao-indexed-draw (vao &key primitive index)
+  (with-slots ((prim primitive) (ind index)) vao
+    (vao-bind vao)
+    (gl:draw-elements (or primitive prim) (or index ind))))
 
  ;; delete
 
