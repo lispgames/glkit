@@ -28,7 +28,7 @@ unknown."))
 
 (defmethod attribute-size ((attr symbol))
   (ecase attr
-    (:byte 1)
+    ((:byte :unsigned-byte) 1)
     ((:short :half-float) 2)
     ((:float :int :unsigned-int) 4)
     (:double 8)))
