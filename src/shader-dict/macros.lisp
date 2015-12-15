@@ -62,27 +62,30 @@ the source is a list.  In this case, `KEY` is the car of that list,
 (defmacro defdict (name (&key shader-path) &body options)
   (let ((shaders) (programs))
     (loop for option in options
-          do (destructuring-ecase option
-               ((shader name type value)
-                (push (list name type value) shaders))
-               ((program &rest options)
-                (if (listp (car options))
-                    (destructuring-bind ((name &key attrs uniforms)
-                                         &rest shaders)
-                        options
-                      (push `(make-instance 'program-source
-                               :name ',name
-                               :uniforms ',uniforms
-                               :attrs ',attrs
-                               :shaders ',shaders)
-                            programs))
-                    (destructuring-bind (name uniform-list &rest shaders)
-                        options
-                      (push `(make-instance 'program-source
-                               :name ',name
-                               :uniforms ',uniform-list
-                               :shaders ',shaders)
-                            programs))))))
+          do (alexandria:switch ((car option) :test 'equalp
+                                              :key 'symbol-name)
+               ("shader"
+                (destructuring-bind (name type value) (cdr option)
+                  (push (list name type value) shaders)))
+               ("program"
+                (destructuring-bind (&rest options) (cdr option)
+                    (if (listp (car options))
+                        (destructuring-bind ((name &key attrs uniforms)
+                                             &rest shaders)
+                            options
+                          (push `(make-instance 'program-source
+                                   :name ',name
+                                   :uniforms ',uniforms
+                                   :attrs ',attrs
+                                   :shaders ',shaders)
+                                programs))
+                        (destructuring-bind (name uniform-list &rest shaders)
+                            options
+                          (push `(make-instance 'program-source
+                                   :name ',name
+                                   :uniforms ',uniform-list
+                                   :shaders ',shaders)
+                                programs)))))))
     `(define-dictionary ',name (list ,@programs)
        :path (or ,shader-path
                  *default-pathname-defaults*)
