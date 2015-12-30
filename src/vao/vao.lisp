@@ -234,7 +234,8 @@ unknown."))
    (primitive :initarg :primitive :initform nil)))
 
 (defclass vao-indexed (vao)
-  ((index :initarg :index)))
+  ((index :initarg :index)
+   (element-type :initarg :element-type)))
 
 (defmethod initialize-instance :after ((vao vao) &key type &allow-other-keys)
   (vao-bind vao)
@@ -314,6 +315,18 @@ unknown."))
       (%gl:bind-buffer :array-buffer (aref vbos vbo))
       (%gl:buffer-sub-data :array-buffer offset size pointer))))
 
+(defun vector->pointer (vector)
+  "Return pointer from fresh static vector"
+  #+glkit-sv
+  (let* ((sv (static-vectors:make-static-vector
+	      (length vector)
+	      :element-type (array-element-type vector)
+	      :initial-contents vector))
+	 (ptr (static-vectors:static-vector-pointer sv)))
+    ptr)
+  #-glkit-sv
+  (error "STATIC-VECTORS not supported by your implementation."))
+
  ;; draw
 
 (defun vao-draw (vao &key primitive (first 0) count)
@@ -321,10 +334,11 @@ unknown."))
     (vao-bind vao)
     (%gl:draw-arrays (or primitive prim) first (or count vertex-count))))
 
-(defun vao-indexed-draw (vao &key primitive index)
-  (with-slots ((prim primitive) (ind index)) vao
+(defun vao-indexed-draw (vao &key primitive count type index)
+  (with-slots ((prim primitive) vertex-count element-type (ind index)) vao
     (vao-bind vao)
-    (gl:draw-elements (or primitive prim) (or index ind))))
+    (%gl:draw-elements (or primitive prim) (or count vertex-count)
+		       (or type element-type) (or index ind))))
 
  ;; delete
 
