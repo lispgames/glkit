@@ -37,6 +37,7 @@
    #:defvao
    #:vao #:vao-buffer-data #:vao-buffer-sub-data
    #:vao-buffer-vector #:vao-buffer-sub-vector
+   #:vector->pointer
    #:vao-bind #:vao-unbind
    #:vao-draw
    #:vao-indexed #:vao-indexed-draw))
