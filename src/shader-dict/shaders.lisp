@@ -62,9 +62,7 @@
                                 name e))))
             (gl:link-program program)
             (unless (gl:get-program program :link-status)
-              (let ((log (gl:get-program-info-log program)))
-                (unless (string= "" log)
-                  (error "Link Log:~%~A~%" log))))
+              (error "Link Log:~%~A~%" (gl:get-program-info-log program)))
             (loop for shader in compiled-shaders
                   do (gl:detach-shader program shader)
                      (gl:delete-shader shader))))
