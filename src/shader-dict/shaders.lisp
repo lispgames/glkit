@@ -61,9 +61,10 @@
                          (error "Error binding attribute ~S:~%~A"
                                 name e))))
             (gl:link-program program)
-            (let ((log (gl:get-program-info-log program)))
-              (unless (string= "" log)
-                (error "Link Log:~%~A~%" log)))
+            (unless (gl:get-program program :link-status)
+              (let ((log (gl:get-program-info-log program)))
+                (unless (string= "" log)
+                  (error "Link Log:~%~A~%" log))))
             (loop for shader in compiled-shaders
                   do (gl:detach-shader program shader)
                      (gl:delete-shader shader))))
