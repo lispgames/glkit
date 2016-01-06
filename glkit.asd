@@ -29,8 +29,17 @@
     ((:file "shaders")
      (:file "uniforms")
      (:file "macros")))
+
    (:module "vao"
     :serial t
     :pathname "vao"
     :components
-    ((:file "vao")))))
+    ((:file "vao")))
+
+   (:module "tex"
+    :serial t
+    :pathname "tex"
+    :components
+    ((:file "util")
+     (:file "texture")
+     (:file "fbo")))))

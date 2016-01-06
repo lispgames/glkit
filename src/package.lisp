@@ -52,4 +52,19 @@
 (defpackage+ :kit.gl.tex
   (:use #:cl #:kit.gl)
   (:export-only
+
+   ;; TEXTURE
+   #:texture #:texture-width #:texture-height #:texture-depth
+   #:texture-target
+   #:tex-bind #:tex-unbind #:tex-parameters
+   #:tex-image-1d #:tex-image-2d #:tex-image-3d
+
+   ;; FBO
+   #:framebuffer #:framebuffer-id #:framebuffer-target
+   #:fbo-bind #:fbo-unbind
+   #:fbo-texture #:fbo-texture-1d #:fbo-texture-2d #:fbo-texture-3d
+   #:fbo-renderbuffer
+
+   ;; RENDERBUFFER
+   #:renderbuffer #:renderbuffer-id
    ))
