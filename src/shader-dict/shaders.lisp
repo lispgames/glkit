@@ -146,6 +146,8 @@ for `DICT`."
             (setf active-program nil))
           (gl:use-program 0))
         (let ((p (find-program dict program)))
+          (unless p
+            (error "Program not found in dictionary: ~S" program))
           (with-slots (id) p
             (setf active-program p)
             (gl:use-program id))))))
