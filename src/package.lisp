@@ -54,10 +54,12 @@
   (:export-only
 
    ;; TEXTURE
-   #:texture #:texture-width #:texture-height #:texture-depth
+   #:texture #:texture-id #:texture-width #:texture-height #:texture-depth
    #:texture-target
    #:tex-bind #:tex-unbind #:tex-parameters
    #:tex-image-1d #:tex-image-2d #:tex-image-3d
+
+   #:active-texture
 
    ;; FBO
    #:framebuffer #:framebuffer-id #:framebuffer-target
