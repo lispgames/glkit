@@ -54,7 +54,9 @@
   (:export-only
 
    ;; TEXTURE
-   #:texture #:texture-id #:texture-width #:texture-height #:texture-depth
+   #:texture #:texture-id
+   #:texture-size
+   #:texture-width #:texture-height #:texture-depth
    #:texture-target
    #:tex-bind #:tex-unbind #:tex-parameters
    #:tex-image-1d #:tex-image-2d #:tex-image-3d

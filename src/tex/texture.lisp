@@ -5,6 +5,13 @@
    (target :initform :texture-2d :initarg :target :accessor texture-target)
    (size :initarg :size :initform nil :accessor texture-size :type kit.glm:vec3)))
 
+(defgeneric texture-width (tex)
+  (:method ((tex texture)) (with-slots (size) tex (aref size 0))))
+(defgeneric texture-height (tex)
+  (:method ((tex texture)) (with-slots (size) tex (aref size 1))))
+(defgeneric texture-depth (tex)
+  (:method ((tex texture)) (with-slots (size) tex (aref size 2))))
+
 (defgeneric tex-parameters (tex &key &allow-other-keys)
   (:documentation "Set texture parameters for `TEX`, bound to
 `TARGET`, where valid, or do nothing. `TEX` must be bound prior to calling.
