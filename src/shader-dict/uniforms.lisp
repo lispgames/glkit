@@ -8,6 +8,8 @@
                          (gethash ,name uniforms)
                          (with-slots (id) active-program
                            (gl:get-uniform-location id ,name)))))
+           (unless (and ,var (>= ,var 0))
+             (error "Uniform not found: ~S" ,name))
            ,@body)))))
 
 (declaim (inline uniformi uniformf uniformfv uniform-matrix))
