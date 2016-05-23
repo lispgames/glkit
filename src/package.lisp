@@ -38,7 +38,7 @@
    #:vao #:vao-buffer-data #:vao-buffer-sub-data
    #:vao-buffer-vector #:vao-buffer-sub-vector
    #:vao-bind #:vao-unbind
-   #:vao-draw
+   #:vao-draw #:vao-draw-instanced
    #:vao-indexed #:vao-indexed-draw))
 
  ;; KIT.GLM

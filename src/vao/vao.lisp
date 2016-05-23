@@ -326,6 +326,11 @@ unknown."))
     (vao-bind vao)
     (gl:draw-elements (or primitive prim) (or index ind))))
 
+(defun vao-draw-instanced (vao prim-count &key primitive (first 0) count)
+  (with-slots ((prim primitive) vertex-count) vao
+    (vao-bind vao)
+    (%gl:draw-arrays-instanced (or primitive prim) first (or count vertex-count) prim-count)))
+
  ;; delete
 
 (defmethod gl-delete-object ((vao vao))
