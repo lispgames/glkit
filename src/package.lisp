@@ -36,10 +36,14 @@
   (:export-only
    #:defvao
    #:vao #:vao-buffer-data #:vao-buffer-sub-data
+   #:vao-indexed
    #:vao-buffer-vector #:vao-buffer-sub-vector
    #:vao-bind #:vao-unbind
    #:vao-draw #:vao-draw-instanced
-   #:vao-indexed #:vao-indexed-draw))
+   #:vao-draw-elements #:vao-draw-elements-instanced
+
+   ;; deprecated
+   #:vao-indexed-draw))
 
  ;; KIT.GLM
 
