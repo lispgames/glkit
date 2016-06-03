@@ -247,8 +247,8 @@ unknown."))
                              :initial-contents (gl:gen-buffers vbo-count))))
     (with-slots (groups) vao-type
       (loop for group across groups
-            as vbo-count = (vao-vbo-count group)
             as vbo-offset = 0 then (+ vbo-offset vbo-count)
+            as vbo-count = (vao-vbo-count group)
             as vbo-subset = (make-array vbo-count :displaced-to vbos
                                                   :displaced-index-offset vbo-offset)
             as attr-offset = 0 then (+ attr-offset attr-count)
@@ -321,15 +321,33 @@ unknown."))
     (vao-bind vao)
     (%gl:draw-arrays (or primitive prim) first (or count vertex-count))))
 
-(defun vao-indexed-draw (vao &key primitive index)
-  (with-slots ((prim primitive) (ind index)) vao
-    (vao-bind vao)
-    (gl:draw-elements (or primitive prim) (or index ind))))
-
 (defun vao-draw-instanced (vao prim-count &key primitive (first 0) count)
   (with-slots ((prim primitive) vertex-count) vao
     (vao-bind vao)
     (%gl:draw-arrays-instanced (or primitive prim) first (or count vertex-count) prim-count)))
+
+(defun vao-draw-elements (vao &key primitive index count type)
+  (with-slots ((prim primitive) (ind index) vertex-count) vao
+    (vao-bind vao)
+    (%gl:draw-elements (or primitive prim)
+                       (or count vertex-count)
+                       type
+                       (or index ind))))
+
+(defun vao-draw-elements-instanced (vao prim-count &key primitive index count type)
+  (with-slots ((prim primitive) (ind index) vertex-count) vao
+    (vao-bind vao)
+    (%gl:draw-elements-instanced (or primitive prim)
+                                 (or count vertex-count)
+                                 type
+                                 (or index ind)
+                                 prim-count)))
+
+
+(defmacro vao-indexed-draw (vao &key primitive index)
+  (warn "VAO-INDEXED-DRAW deprecated, use VAO-DRAW-ELEMENTS")
+  `(vao-draw-elements ,vao :primitive ,primitive :index ,index))
+
 
  ;; delete
 
