@@ -272,6 +272,20 @@ unknown."))
 
  ;; buffer-data
 
+(defun guess-buffer-size (array)
+  (let* ((count (length array))
+         (type-size
+           (etypecase array
+             ((simple-array single-float *) 4)
+             ((simple-array double-float *) 8)
+             ((simple-array (signed-byte 8) *) 1)
+             ((simple-array (unsigned-byte 8) *) 1)
+             ((simple-array (signed-byte 16) *) 2)
+             ((simple-array (unsigned-byte 16) *) 2)
+             ((simple-array (signed-byte 32) *) 4)
+             ((simple-array (unsigned-byte 32) *) 4))))
+    (* count type-size)))
+
 (defun vao-buffer-vector (vao vbo size vector &optional (usage :dynamic-draw))
   #+glkit-sv
   (with-slots (type vbos) vao
@@ -280,7 +294,8 @@ unknown."))
                   (length vector)
                   :element-type (array-element-type vector)
                   :initial-contents vector))
-             (ptr (static-vectors:static-vector-pointer sv)))
+             (ptr (static-vectors:static-vector-pointer sv))
+             (size (or size (guess-buffer-size vector))))
         (%gl:bind-buffer :array-buffer (aref vbos vbo))
         (%gl:buffer-data :array-buffer size ptr usage)
         (static-vectors:free-static-vector sv))))
@@ -301,7 +316,8 @@ unknown."))
                   (length vector)
                   :element-type (array-element-type vector)
                   :initial-contents vector))
-             (ptr (static-vectors:static-vector-pointer sv)))
+             (ptr (static-vectors:static-vector-pointer sv))
+             (size (or size (guess-buffer-size vector))))
         (%gl:bind-buffer :array-buffer (aref vbos vbo))
         (%gl:buffer-sub-data :array-buffer offset size ptr)
         (static-vectors:free-static-vector sv))))
