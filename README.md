@@ -181,7 +181,7 @@ VBOs, this is reasonably easy to accomplish with something like
 There are three layout types:
 
 * `:separate`: This uses a separate VBO for each attribute supplied.
-* `:interleave`:  This uses a single VBO for each attribute specified, and *interleaves* the attributes, e.g.: `Vert0 Color0 Vert1 Color1 ...`, where each attribute (such as "Vert0") has `:count` values.
+* `:interleave`:  This uses a single VBO for all attributes specified, and *interleaves* the attributes, e.g.: `Vert0 Color0 Vert1 Color1 ...`, where each attribute (such as "Vert0") has `:count` values.
 * `:block`: This uses a single VBO for each attribute specified, arranged in *blocks*, e.g.: `Vert0 Vert1 Vert2 ... Color0 Color1 Color2 ...`.  This *requires* you specify `:vertex-count` up front to `make-instance`.  **This is currently not fully implemented.**
 
 You may specify one or more groups to a VAO definition:
