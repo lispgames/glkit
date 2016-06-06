@@ -160,9 +160,10 @@ unknown."))
   (declare (ignore vertex-count))
   (with-slots (attributes divisor) group
     (loop for attr across attributes
-          for i from starting-index
-          do (gl:bind-buffer :array-buffer (aref vbos i))
-             (attribute-set-pointer attr i 0 0 divisor))))
+          for attr-index from starting-index
+          for vbo-index from 0
+          do (gl:bind-buffer :array-buffer (aref vbos vbo-index))
+             (attribute-set-pointer attr attr-index 0 0 divisor))))
 
 (defmethod vao-set-pointers ((group vertex-block-group) starting-index
                              vertex-count vbos)
@@ -255,7 +256,7 @@ unknown."))
             as attr-count = (vao-attr-count group)
             do (loop for i from 0 below (vao-attr-count group)
                      do (%gl:enable-vertex-attrib-array i))
-            (vao-set-pointers group attr-offset vertex-count vbo-subset)))))
+               (vao-set-pointers group attr-offset vertex-count vbo-subset)))))
 
 (defmethod vao-attr-count ((vao vao))
   (with-slots (type) vao
