@@ -134,13 +134,13 @@ unknown."))
   (with-slots (attributes divisor) group
     (loop for attr across attributes
           summing (attribute-size attr) into size
-          finally (return (truncate size (if (= 0 divisor) 1 divisor))))))
+          finally (return size))))
 
 (defmethod attribute-size ((group vertex-separate-group))
   (with-slots (attributes divisor) group
     (loop for attr across attributes
           summing (attribute-size attr) into size
-          finally (return (truncate size (if (= 0 divisor) 1 divisor))))))
+          finally (return size))))
 
 ;;; VAO-SET-POINTERS
 (defmethod vao-set-pointers ((group vertex-interleave-group) starting-index
@@ -255,7 +255,7 @@ unknown."))
             as attr-offset = 0 then (+ attr-offset attr-count)
             as attr-count = (vao-attr-count group)
             do (loop for i from 0 below (vao-attr-count group)
-                     do (%gl:enable-vertex-attrib-array i))
+                     do (%gl:enable-vertex-attrib-array (+ i attr-offset)))
                (vao-set-pointers group attr-offset vertex-count vbo-subset)))))
 
 (defmethod vao-attr-count ((vao vao))
@@ -287,7 +287,7 @@ unknown."))
              ((simple-array (unsigned-byte 32) *) 4))))
     (* count type-size)))
 
-(defun vao-buffer-vector (vao vbo size vector &optional (usage :dynamic-draw))
+(defun vao-buffer-vector (vao vbo byte-size vector &optional (usage :dynamic-draw))
   #+glkit-sv
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
@@ -296,20 +296,20 @@ unknown."))
                   :element-type (array-element-type vector)
                   :initial-contents vector))
              (ptr (static-vectors:static-vector-pointer sv))
-             (size (or size (guess-buffer-size vector))))
+             (byte-size (or byte-size (guess-buffer-size vector))))
         (%gl:bind-buffer :array-buffer (aref vbos vbo))
-        (%gl:buffer-data :array-buffer size ptr usage)
+        (%gl:buffer-data :array-buffer byte-size ptr usage)
         (static-vectors:free-static-vector sv))))
   #-glkit-sv
   (error "STATIC-VECTORS not supported by your implementation."))
 
-(defun vao-buffer-data (vao vbo size pointer &optional (usage :dynamic-draw))
+(defun vao-buffer-data (vao vbo byte-size pointer &optional (usage :dynamic-draw))
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
       (%gl:bind-buffer :array-buffer (aref vbos vbo))
-      (%gl:buffer-data :array-buffer size pointer usage))))
+      (%gl:buffer-data :array-buffer byte-size pointer usage))))
 
-(defun vao-buffer-sub-vector (vao vbo offset size vector)
+(defun vao-buffer-sub-vector (vao vbo offset byte-size vector)
   #+glkit-sv
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
@@ -318,18 +318,18 @@ unknown."))
                   :element-type (array-element-type vector)
                   :initial-contents vector))
              (ptr (static-vectors:static-vector-pointer sv))
-             (size (or size (guess-buffer-size vector))))
+             (byte-size (or byte-size (guess-buffer-size vector))))
         (%gl:bind-buffer :array-buffer (aref vbos vbo))
-        (%gl:buffer-sub-data :array-buffer offset size ptr)
+        (%gl:buffer-sub-data :array-buffer offset byte-size ptr)
         (static-vectors:free-static-vector sv))))
   #-glkit-sv
   (error "STATIC-VECTORS not supported by your implementation."))
 
-(defun vao-buffer-sub-data (vao vbo offset size pointer)
+(defun vao-buffer-sub-data (vao vbo offset byte-size pointer)
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
       (%gl:bind-buffer :array-buffer (aref vbos vbo))
-      (%gl:buffer-sub-data :array-buffer offset size pointer))))
+      (%gl:buffer-sub-data :array-buffer offset byte-size pointer))))
 
  ;; draw
 
