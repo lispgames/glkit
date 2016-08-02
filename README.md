@@ -157,7 +157,8 @@ Alternatively, you can use `VAO-BUFFER-VECTOR` (and `VAO-BUFFER-SUB-VECTOR`), an
 
 Note the numbers above require you fill in a few specific things:
 
-* `vao-buffer-*` (and the `-sub` variants) take the *total byte count*.  So for a `:float` attribute with 3 members, that's `(* 4 3 COUNT)`.
+* `vao-buffer-data` (and the `-sub` variant) take the *total byte count*.  So for a `:float` attribute with 3 members, that's `(* 4 3 COUNT)`.
+* `vao-buffer-vector` (and the `-sub` variant) do not require you to supply the *total byte count*, as it can be guessed. You can however supply this information manually, by means of the keyword argument `:byte-size`.
 * `vao-buffer-*` also takes the *VBO index* rather than an attribute name, because an attribute might not have a unique VBO.  See [Layouts](#Layouts) below.
 * `vao-draw` takes the *vertex* count; e.g., triangles have 3 vertices, and if you have 10 triangles, that's 30 vertices.
 
@@ -170,8 +171,8 @@ VBOs, this is reasonably easy to accomplish with something like
 * `defvao NAME OPTIONS &body GROUPS`<br> Define a VAO called `NAME`. Currently, there are no options.  See below for group definition.
 * `vao-buffer-data VAO VBO BYTE-COUNT POINTER &optional (USAGE :dynamic-draw)`<br> Copy data to the VBO specified.  The VBO is specified as a number.  `BYTE-COUNT` is the total number of bytes to be copied.  `POINTER` is a (foreign) pointer to the data.  `USAGE` may be any valid usage constant for `glBufferData`.
 * `vao-buffer-sub-data VAO VBO OFFSET BYTE-COUNT POINTER`<br> The `glBufferSubData` variant.
-* `vao-buffer-vector VAO VBO BYTE-COUNT VECTOR &optional (USAGE :dynamic-draw)`<br> Copy data to the VBO specified.  The VBO is specified as a number.  `BYTE-COUNT` is the total number of bytes to be copied.  `POINTER` is a (foreign) pointer to the data.  `USAGE` may be any valid usage constant for `glBufferData`.  `VECTOR` must be a vector of specializable type for *static-vectors*.  Calling this will produce an error if *static-vectors* is not supported.
-* `vao-buffer-sub-vector VAO VBO OFFSET BYTE-COUNT VECTOR`<br> The `glBufferSubData` variant.
+* `vao-buffer-vector VAO VBO VECTOR &key BYTE-SIZE (USAGE :dynamic-draw)`<br> Copy data to the VBO specified.  The VBO is specified as a number.  `BYTE-COUNT` is the total number of bytes to be copied, and is optional (this can be guessed from the array contents).  `POINTER` is a (foreign) pointer to the data.  `USAGE` may be any valid usage constant for `glBufferData`.  `VECTOR` must be a vector of specializable type for *static-vectors*.  Calling this will produce an error if *static-vectors* is not supported.
+* `vao-buffer-sub-vector VAO VBO OFFSET VECTOR &key BYTE-SIZE`<br> The `glBufferSubData` variant.
 * `vao-bind VAO`<br> Bind the VAO.  This is not necessary for calling the provided VAO functions, since the VAO is bound automatically.  However, it may be useful to ensure the VAO is bound if you wish to make GL calls manually.
 * `vao-unbind`<br> Unbind the current-bound VAO.  Not done automatically.
 * `vao-draw VAO &key primitive (first 0) count`<br> Bind the VAO and call `glDrawArrays`.  `count` is optional only if the vertex count has been supplied to the VAO, e.g. during `make-instance`.  `primitive` defaults to triangles, but may be specified explicitly here, overriding the VAO's configuration.

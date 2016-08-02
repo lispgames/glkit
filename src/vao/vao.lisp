@@ -287,7 +287,7 @@ unknown."))
              ((simple-array (unsigned-byte 32) *) 4))))
     (* count type-size)))
 
-(defun vao-buffer-vector (vao vbo byte-size vector &optional (usage :dynamic-draw))
+(defun vao-buffer-vector (vao vbo vector &key byte-size (usage :dynamic-draw))
   #+glkit-sv
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
@@ -309,7 +309,7 @@ unknown."))
       (%gl:bind-buffer :array-buffer (aref vbos vbo))
       (%gl:buffer-data :array-buffer byte-size pointer usage))))
 
-(defun vao-buffer-sub-vector (vao vbo offset byte-size vector)
+(defun vao-buffer-sub-vector (vao vbo offset vector &key byte-size)
   #+glkit-sv
   (with-slots (type vbos) vao
     (with-slots (attr-index) type
