@@ -2,7 +2,7 @@
 
 (defvar *vao-declarations* (make-hash-table))
 
- ;; GFs
+;; GFs
 
 (defgeneric vao-add (vao object))
 
@@ -33,7 +33,7 @@ unknown."))
     ((:float :int :unsigned-int) 4)
     (:double 8)))
 
- ;; VAO declaration
+;; VAO declaration
 
 (defun vao-find (name)
   (gethash name *vao-declarations*))
@@ -83,6 +83,7 @@ unknown."))
     (incf attr-count)))
 
 ;;; VAO-ADD
+
 (defmethod vao-add (vao object)
   (error "You may not add ~%  ~S~% to~%  ~S" object vao))
 
@@ -103,6 +104,7 @@ unknown."))
     (vector-push-extend sg attributes)))
 
 ;;; ATTR/VBO counts
+
 (defmethod vao-attr-count ((attr vertex-attribute)) 1)
 
 (defmethod vao-attr-count ((group vertex-attribute-group))
@@ -131,29 +133,30 @@ unknown."))
    (* (attribute-size type) count)))
 
 (defmethod attribute-size ((group vertex-interleave-group))
-  (with-slots (attributes divisor) group
+  (with-slots (attributes) group
     (loop for attr across attributes
           summing (attribute-size attr) into size
           finally (return size))))
 
 (defmethod attribute-size ((group vertex-separate-group))
-  (with-slots (attributes divisor) group
+  (with-slots (attributes) group
     (loop for attr across attributes
           summing (attribute-size attr) into size
           finally (return size))))
 
 ;;; VAO-SET-POINTERS
+
 (defmethod vao-set-pointers ((group vertex-interleave-group) starting-index
                              vertex-count vbos)
   (declare (ignore vertex-count))
-  (let ((stride (attribute-size group))
-        (offset 0))
-    (with-slots (attributes divisor) group
-      (%gl:bind-buffer :array-buffer (aref vbos 0))
-      (loop for attr across attributes
-            for i from starting-index
-            do (attribute-set-pointer attr i stride offset divisor)
-               (incf offset (attribute-size attr))))))
+  (with-slots (attributes divisor) group
+    (%gl:bind-buffer :array-buffer (aref vbos 0))
+    (loop with stride = (attribute-size group)
+          with offset = 0
+          for attr across attributes
+          for i from starting-index
+          do (attribute-set-pointer attr i stride offset divisor)
+             (incf offset (attribute-size attr)))))
 
 (defmethod vao-set-pointers ((group vertex-separate-group) starting-index
                              vertex-count vbos)
@@ -169,7 +172,7 @@ unknown."))
                              vertex-count vbos)
   (error "Implement VAO-SET-POINTERS for block groups"))
 
- ;; Parsing
+;; Parsing
 
 (defvar *vao-decl* nil)
 
@@ -213,7 +216,7 @@ unknown."))
         do (vao-add group (vao-parse i)))
   group)
 
- ;; DEFVAO
+;; DEFVAO
 
 (defmacro defvao (name options &body groups)
   (declare (ignore options))
@@ -224,7 +227,7 @@ unknown."))
             ',groups)
        (setf (gethash ',name *vao-declarations*) *vao-decl*))))
 
- ;; vao
+;; vao
 
 (defclass vao ()
   ((type :type vao-declaration)
@@ -254,7 +257,7 @@ unknown."))
                                                   :displaced-index-offset vbo-offset)
             as attr-offset = 0 then (+ attr-offset attr-count)
             as attr-count = (vao-attr-count group)
-            do (loop for i from 0 below (vao-attr-count group)
+            do (loop for i below (vao-attr-count group)
                      do (%gl:enable-vertex-attrib-array (+ i attr-offset)))
                (vao-set-pointers group attr-offset vertex-count vbo-subset)))))
 
@@ -262,7 +265,7 @@ unknown."))
   (with-slots (type) vao
     (vao-attr-count type)))
 
- ;; vao activation
+;; vao activation
 
 (defun vao-bind (vao)
   (with-slots (id) vao
@@ -271,7 +274,7 @@ unknown."))
 (defun vao-unbind ()
   (%gl:bind-vertex-array 0))
 
- ;; buffer-data
+;; buffer-data
 
 (defun guess-buffer-size (array)
   (let* ((count (length array))
@@ -289,49 +292,45 @@ unknown."))
 
 (defun vao-buffer-vector (vao vbo vector &key byte-size (usage :dynamic-draw))
   #+glkit-sv
-  (with-slots (type vbos) vao
-    (with-slots (attr-index) type
-      (let* ((sv (static-vectors:make-static-vector
-                  (length vector)
-                  :element-type (array-element-type vector)
-                  :initial-contents vector))
-             (ptr (static-vectors:static-vector-pointer sv))
-             (byte-size (or byte-size (guess-buffer-size vector))))
-        (%gl:bind-buffer :array-buffer (aref vbos vbo))
-        (%gl:buffer-data :array-buffer byte-size ptr usage)
-        (static-vectors:free-static-vector sv))))
+  (with-slots (vbos) vao
+    (let* ((sv (static-vectors:make-static-vector
+                (length vector)
+                :element-type (array-element-type vector)
+                :initial-contents vector))
+           (ptr (static-vectors:static-vector-pointer sv))
+           (byte-size (or byte-size (guess-buffer-size vector))))
+      (%gl:bind-buffer :array-buffer (aref vbos vbo))
+      (%gl:buffer-data :array-buffer byte-size ptr usage)
+      (static-vectors:free-static-vector sv)))
   #-glkit-sv
   (error "STATIC-VECTORS not supported by your implementation."))
 
 (defun vao-buffer-data (vao vbo byte-size pointer &optional (usage :dynamic-draw))
-  (with-slots (type vbos) vao
-    (with-slots (attr-index) type
-      (%gl:bind-buffer :array-buffer (aref vbos vbo))
-      (%gl:buffer-data :array-buffer byte-size pointer usage))))
+  (with-slots (vbos) vao
+    (%gl:bind-buffer :array-buffer (aref vbos vbo))
+    (%gl:buffer-data :array-buffer byte-size pointer usage)))
 
 (defun vao-buffer-sub-vector (vao vbo offset vector &key byte-size)
   #+glkit-sv
-  (with-slots (type vbos) vao
-    (with-slots (attr-index) type
-      (let* ((sv (static-vectors:make-static-vector
-                  (length vector)
-                  :element-type (array-element-type vector)
-                  :initial-contents vector))
-             (ptr (static-vectors:static-vector-pointer sv))
-             (byte-size (or byte-size (guess-buffer-size vector))))
-        (%gl:bind-buffer :array-buffer (aref vbos vbo))
-        (%gl:buffer-sub-data :array-buffer offset byte-size ptr)
-        (static-vectors:free-static-vector sv))))
+  (with-slots (vbos) vao
+    (let* ((sv (static-vectors:make-static-vector
+                (length vector)
+                :element-type (array-element-type vector)
+                :initial-contents vector))
+           (ptr (static-vectors:static-vector-pointer sv))
+           (byte-size (or byte-size (guess-buffer-size vector))))
+      (%gl:bind-buffer :array-buffer (aref vbos vbo))
+      (%gl:buffer-sub-data :array-buffer offset byte-size ptr)
+      (static-vectors:free-static-vector sv)))
   #-glkit-sv
   (error "STATIC-VECTORS not supported by your implementation."))
 
 (defun vao-buffer-sub-data (vao vbo offset byte-size pointer)
-  (with-slots (type vbos) vao
-    (with-slots (attr-index) type
-      (%gl:bind-buffer :array-buffer (aref vbos vbo))
-      (%gl:buffer-sub-data :array-buffer offset byte-size pointer))))
+  (with-slots (vbos) vao
+    (%gl:bind-buffer :array-buffer (aref vbos vbo))
+    (%gl:buffer-sub-data :array-buffer offset byte-size pointer)))
 
- ;; draw
+;; draw
 
 (defun vao-draw (vao &key primitive (first 0) count)
   (with-slots ((prim primitive) vertex-count) vao
@@ -360,13 +359,11 @@ unknown."))
                                  (or index ind)
                                  prim-count)))
 
-
 (defmacro vao-indexed-draw (vao &key primitive index)
   (warn "VAO-INDEXED-DRAW deprecated, use VAO-DRAW-ELEMENTS")
   `(vao-draw-elements ,vao :primitive ,primitive :index ,index))
 
-
- ;; delete
+;; delete
 
 (defmethod gl-delete-object ((vao vao))
   (with-slots (vbos id) vao
