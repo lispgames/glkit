@@ -1,7 +1,7 @@
 (in-package :kit.gl.vao)
 
 (defvar *vao-declarations* (make-hash-table))
-(defvar *vao-decl* nil)
+(defvar *vao* nil)
 
 (defclass vertex-attribute ()
   ((name :initarg :name :reader vertex-attribute-name)
@@ -43,8 +43,7 @@
         (setf vao-type (vao-find type))
         (error "No :TYPE specified for VAO."))
     (let ((vbo-count (vao-vbo-count vao-type)))
-      (setf vbos (make-array vbo-count
-                             :initial-contents (gl:gen-buffers vbo-count))))
+      (setf vbos (map 'vector #'identity (gl:gen-buffers vbo-count))))
     (with-slots (groups) vao-type
       (loop :for group :across groups
             :for vbo-offset = 0 :then (+ vbo-offset vbo-count)
@@ -150,16 +149,7 @@
     (loop :for attr :across attributes
           :sum (attribute-size attr))))
 
-(defgeneric vao-set-pointers (group starting-index total-vertices vbos)
-  (:documentation "Use glVertexAttribPointer and related to define the
-attributes.  `VBOS` is a vector of `VAO-VBO-COUNT` VBOs.  It is
-necessary to bind each of these as appropriate.  It is not necessary
-to call `gl:enable-vertex-attrib-array`.
-
-`STARTING-INDEX` is the starting vertex attribute index for this group.
-
-`TOTAL-VERTICES` is the known vertex count, or `NIL` if it is
-unknown."))
+(defgeneric vao-set-pointers (group starting-index total-vertices vbos))
 
 (defmethod vao-set-pointers ((group vertex-separate-group) starting-index
                              vertex-count vbos)
@@ -188,9 +178,6 @@ unknown."))
   (error "Implement VAO-SET-POINTERS for block groups"))
 
 (defun vao-parse (list)
-  ;; The distinction between a group decl and a vertex-attribute decl
-  ;; is whether the second argument is an option list (which may be
-  ;; NIL).
   (if (listp (cadr list))
       (vao-parse-group
        (vao-parse-make-group (car list) (cadr list))
@@ -204,7 +191,7 @@ unknown."))
                 :count count
                 :out-type (or out-type type)
                 :normalizep normalizep)))
-    (vao-decl-add-index *vao-decl* attr)
+    (vao-decl-add-index *vao* attr)
     attr))
 
 (defgeneric vao-parse-make-group (type options))
@@ -228,11 +215,9 @@ unknown."))
 (defmacro defvao (name options &body groups)
   (declare (ignore options))
   `(eval-when (:compile-toplevel :load-toplevel :execute)
-     (let ((*vao-decl* (make-instance 'vao-declaration)))
-       (map 'nil (lambda (x)
-                   (vao-add *vao-decl* (vao-parse x)))
-            ',groups)
-       (setf (gethash ',name *vao-declarations*) *vao-decl*))))
+     (let ((*vao* (make-instance 'vao-declaration)))
+       (map 'nil (lambda (x) (vao-add *vao* (vao-parse x))) ',groups)
+       (setf (gethash ',name *vao-declarations*) *vao*))))
 
 (defun vao-bind (vao)
   (with-slots (id) vao
