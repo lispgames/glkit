@@ -46,8 +46,8 @@
                 :type 'vertex-color-2d
                 :primitive :triangles
                 :vertex-count (/ (length *vao-verts*) 2)))
-    (vao-buffer-vector vao 0 (* 4 (length *vao-verts*)) *vao-verts*)
-    (vao-buffer-vector vao 1 (* 4 (length *vao-colors*)) *vao-colors*)))
+    (vao-buffer-vector vao 0 *vao-verts*)
+    (vao-buffer-vector vao 1 *vao-colors*)))
 
 (defmethod render ((window vao-shader-window))
   (with-slots (view-matrix vao programs) window
