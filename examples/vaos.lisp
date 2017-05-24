@@ -35,7 +35,7 @@
                 :type 'vertex-2d
                 :primitive :triangles
                 :vertex-count (/ (length *vao-verts*) 2)))
-    (vao-buffer-vector vao 0 (* 4 (length *vao-verts*)) *vao-verts*)))
+    (vao-buffer-vector vao 0 *vao-verts*)))
 
 (defmethod render ((window vao-window))
   (with-slots (vao rotation) window
