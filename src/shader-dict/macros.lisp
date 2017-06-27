@@ -59,7 +59,7 @@ the source is a list.  In this case, `KEY` is the car of that list,
 
  ;; DEFDICT
 
-(defmacro defdict (name (&key shader-path) &body options)
+(defmacro defdict (name (&key shader-path (uniform-style :underscore)) &body options)
   (let ((shaders) (programs))
     (loop for option in options
           do (alexandria:switch ((car option) :test 'equalp
@@ -75,6 +75,7 @@ the source is a list.  In this case, `KEY` is the car of that list,
                             options
                           (push `(make-instance 'program-source
                                    :name ',name
+                                   :uniform-style ',uniform-style
                                    :uniforms ',uniforms
                                    :attrs ',attrs
                                    :shaders ',shaders)
@@ -83,6 +84,7 @@ the source is a list.  In this case, `KEY` is the car of that list,
                             options
                           (push `(make-instance 'program-source
                                    :name ',name
+                                   :uniform-style ',uniform-style
                                    :uniforms ',uniform-list
                                    :shaders ',shaders)
                                 programs)))))))
