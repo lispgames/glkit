@@ -12,6 +12,7 @@
   ((name :initarg :name)
    (shaders :initarg :shaders)
    (vertex-attributes :initarg :attrs :initform nil)
+   (uniform-style :initarg :uniform-style)
    (uniforms :initarg :uniforms)))
 
 (defclass program ()
@@ -90,18 +91,28 @@
       (gl:use-program p)
       (with-slots (id  uniforms) program
         (setf id p)
-        (with-slots ((source-uniforms uniforms)) source
+        (with-slots (uniform-style (source-uniforms uniforms)) source
           (loop for uniform in source-uniforms
                 as symbol = (if (symbolp uniform) uniform (car uniform))
                 as name = (if (or (symbolp uniform)
                                   (not (cadr uniform)))
-                              (symbol-to-uniform uniform)
+                              (symbol-to-uniform uniform-style uniform)
                               (cadr uniform))
                 as loc = (gl:get-uniform-location id name)
                 do (setf (gethash symbol uniforms) loc)))))))
 
-(defun symbol-to-uniform (symbol)
+(defmethod symbol-to-uniform ((uniform-style (eql :underscore)) symbol)
   (substitute #\_ #\- (string-downcase (symbol-name symbol))))
+
+(defmethod symbol-to-uniform ((uniform-style (eql :camel-case)) symbol)
+  (let ((result (string-downcase (symbol-name symbol))))
+    (loop :for char :across result
+          :for i :from 0
+          :when (char= char #\-)
+            :do (setf (elt result (1+ i)) (char-upcase (elt result (1+ i)))
+                      result (remove char result :count 1))
+                (decf i))
+    result))
 
 (defun find-program (dictionary name)
   (with-slots (programs) dictionary
