@@ -1,5 +1,25 @@
 (in-package :kit.gl.shader)
 
+
+(define-condition missing-uniform-error (simple-error)
+  ((name :reader name :initarg :name))
+  (:report (lambda (c s)
+             (format s "Uniform not found: ~S" (name c)))))
+
+(defmacro without-missing-uniform-errors ((&key print) &body body)
+  (with-gensyms (seen e)
+    `(let ((,seen (make-hash-table :test #'equal)))
+       (handler-bind
+           ((missing-uniform-error
+              (lambda (,e)
+                ,@(when print
+                    `((when (and ,print (not (gethash (name ,e) ,seen)))
+                        (format t "Uniform not found: ~s~%" (name ,e))
+                        (setf (gethash (name ,e) ,seen) t))))
+                (invoke-restart 'continue))))
+         ,@body))))
+
+
 (defmacro with-uniform-location ((var name) dict &body body)
   (once-only (name)
     `(with-slots (active-program) ,dict
@@ -9,7 +29,8 @@
                          (with-slots (id) active-program
                            (gl:get-uniform-location id ,name)))))
            (unless (and ,var (or (>= ,var -1)))
-             (error "Uniform not found: ~S" ,name))
+             (cerror "Continue" 'missing-uniform-error :name name)
+             (setf ,var -1))
            ,@body)))))
 
 (declaim (inline uniformi uniformf uniformfv uniform-matrix))

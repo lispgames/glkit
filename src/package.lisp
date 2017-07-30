@@ -23,6 +23,7 @@
    #:use-program
    #:uniformi #:uniformf #:uniformfv #:uniform-matrix
    #:uniform-matrix-1-sv
+   #:missing-uniform-error #:without-missing-uniform-errors
 
    #:defdict #:dict #:find-dictionary #:define-dictionary
    #:program #:shader
