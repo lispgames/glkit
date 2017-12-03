@@ -29,7 +29,7 @@ unknown."))
 (defmethod attribute-size ((attr symbol))
   (ecase attr
     ((:byte :unsigned-byte) 1)
-    ((:short :half-float) 2)
+    ((:short :unsigned-short :half-float) 2)
     ((:float :int :unsigned-int) 4)
     (:double 8)))
 
@@ -48,7 +48,7 @@ unknown."))
 (defun attribute-set-pointer (attr index stride offset divisor)
   (with-slots (type out-type count normalizep) attr
     (ecase out-type
-      ((:byte :short :int :unsigned-int)
+      ((:byte :unsigned-byte :short :unsigned-short :int :unsigned-int)
        (%gl:vertex-attrib-ipointer index count type stride offset))
       ((:float :half-float)
        (%gl:vertex-attrib-pointer index count type
