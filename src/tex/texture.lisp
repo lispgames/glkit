@@ -3,7 +3,9 @@
 (defclass texture ()
   ((id :initform (car (gl:gen-textures 1)) :initarg :id :accessor texture-id)
    (target :initform :texture-2d :initarg :target :accessor texture-target)
-   (size :initarg :size :initform nil :accessor texture-size :type kit.glm:vec3)))
+   (size :initarg :size
+         :initform (kit.glm:vec3 0.0 0.0 0.0)
+         :accessor texture-size :type kit.glm:vec3)))
 
 (defgeneric texture-width (tex)
   (:method ((tex texture)) (with-slots (size) tex (aref size 0))))
