@@ -29,7 +29,7 @@
                          (with-slots (id) active-program
                            (gl:get-uniform-location id ,name)))))
            (unless (and ,var (or (>= ,var -1)))
-             (cerror "Continue" 'missing-uniform-error :name name)
+             (cerror "Continue" 'missing-uniform-error :name ,name)
              (setf ,var -1))
            ,@body)))))
 
